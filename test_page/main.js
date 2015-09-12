@@ -8,16 +8,28 @@ var strings = {
     'userSplit': '[sys][time]%time%[/time]: Пользователь [user]%name%[/user] покинул чат.[/sys]'
 };
 window.onload = function() {
+    var addMessage = function(msg) {
+        var el = document.querySelector('#log');
+        // Добавляем в лог сообщение, заменив время, имя и текст на полученные
+        el.innerHTML += strings[msg.event].replace(/\[([a-z]+)\]/g, '<span class="$1">').replace(/\[\/[a-z]+\]/g, '</span>').replace(/\%time\%/, msg.time).replace(/\%name\%/, msg.name).replace(/\%text\%/, unescape(msg.text).replace('<', '&lt;').replace('>', '&gt;')) + '<br>';
+
+        // Прокручиваем лог в конец
+        el.scrollTop = el.scrollHeight;
+    };
+
     // Создаем соединение с сервером
     var socket = io.connect(url);
     socket.on('connect', function () {
         console.log('connected');
         socket.on('message', function (msg) {
             console.log(msg);
-            // Добавляем в лог сообщение, заменив время, имя и текст на полученные
-            document.querySelector('#log').innerHTML += strings[msg.event].replace(/\[([a-z]+)\]/g, '<span class="$1">').replace(/\[\/[a-z]+\]/g, '</span>').replace(/\%time\%/, msg.time).replace(/\%name\%/, msg.name).replace(/\%text\%/, unescape(msg.text).replace('<', '&lt;').replace('>', '&gt;')) + '<br>';
-            // Прокручиваем лог в конец
-            document.querySelector('#log').scrollTop = document.querySelector('#log').scrollHeight;
+            if (msg.event === 'history') {
+                msg.messages.forEach(function(el, i) {
+                    addMessage(el);
+                });
+            } else {
+                addMessage(msg);
+            }
         });
         // При нажатии <Enter> или кнопки отправляем текст
         document.querySelector('#input').onkeypress = function(e) {
@@ -29,6 +41,7 @@ window.onload = function() {
             }
         };
         document.querySelector('#send').onclick = function() {
+
             socket.send(escape(document.querySelector('#input').value));
             document.querySelector('#input').value = '';
         };
