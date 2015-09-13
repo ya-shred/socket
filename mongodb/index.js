@@ -1,12 +1,10 @@
-var MongoClient = require('mongodb').MongoClient
-    , assert = require('assert');
+var MongoClient = require('mongodb').MongoClient;
 
 // Connection URL
 var url = 'mongodb://localhost:27017/myproject';
 var db = null;
 // Use connect method to connect to the Server
 MongoClient.connect(url, function(err, dbLink) {
-    assert.equal(null, err);
     console.log("Connected correctly to server");
 
     db = dbLink;
