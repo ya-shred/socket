@@ -1,4 +1,4 @@
-var url = 'http://localhost:8080';
+var url = 'http://localhost:8008';
 // Создаем текст сообщений для событий
 var strings = {
     'connected': '[sys][time]%time%[/time]: Вы успешно соединились к сервером как [user]%name%[/user].[/sys]',
@@ -23,13 +23,13 @@ window.onload = function() {
         console.log('connected');
         socket.on('message', function (msg) {
             console.log(msg);
-            if (msg.event === 'history') {
-                msg.messages.forEach(function(el, i) {
-                    addMessage(el);
-                });
-            } else {
-                addMessage(msg);
-            }
+//            if (msg.event === 'history') {
+//                msg.messages.forEach(function(el, i) {
+//                    addMessage(el);
+//                });
+//            } else {
+//                addMessage(msg);
+//            }
         });
         // При нажатии <Enter> или кнопки отправляем текст
         document.querySelector('#input').onkeypress = function(e) {
@@ -45,9 +45,5 @@ window.onload = function() {
             socket.send(escape(document.querySelector('#input').value));
             document.querySelector('#input').value = '';
         };
-    });
-
-    socket.on('disconnect', function(){
-        console.log('disconnect');
     });
 };
