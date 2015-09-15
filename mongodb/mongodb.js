@@ -51,9 +51,21 @@ model = {
         });
     },
 
-    getHistory: function(user) {
+    getHistory: function (user) {
         return new Promise(function (resolve, reject) {
             resolve([{channel: 'test', message: 'test'}]);
+        });
+    },
+
+    getChannels: function (user) {
+        return new Promise(function (resolve, reject) {
+            resolve([{channel: 'test', message: 'test'}]);
+        });
+    },
+
+    getUsers: function (user) {
+        return new Promise(function (resolve, reject) {
+            resolve([{id: 'user', message: 'test'}]);
         });
     }
 };

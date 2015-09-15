@@ -1,4 +1,6 @@
-require('./io/io.js');
+var socketServer = require('./io/io.js');
+
+socketServer.start();
 
 //console.log('server started on localhost:8080');
 //// Навешиваем обработчик на подключение нового клиента
