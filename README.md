@@ -1,16 +1,16 @@
-Run
+Запуск сервера
 -------
 
-Install before
+Установить до запуска
 - npm
 - mongodb
 
-Execute
+Запуск
 - npm i
-- Run mongodb: mongod --dbpath=DB_PATH --port 27017 # DB_PATH for window - C:/data/db
-- npm start # load socket.io
+- запустить mongodb: mongod --dbpath=DB_PATH --port 27017 # DB_PATH для window - C:/data/db
+- npm start # запуск сокет сервера
 - open test page: test_page/index.html
 
-For testing
-- install Mocha
+Для тестирования
+- установить Mocha
 - run test: npm test
