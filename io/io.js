@@ -37,6 +37,7 @@ var model = {
                 model.connected(userInfo);
                 // Обработка всех поступающих от пользователя сообщений
                 socket.on('message', function (message) {
+                    console.log('got message', message);
                     // Процессим сообщение
                     api.processMessage(userInfo, message)
                         // Если обработка сообщения прошла успешна
