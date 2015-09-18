@@ -2,10 +2,12 @@
   "name": "socket",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "client.js",
   "scripts": {
+    "postinstall": "./node_modules/browserify/bin/cmd.js client.js > client-0.0.1.js",
     "start": "node ./bin/www",
-    "test": "mocha ./test_page/test_api.js"
+    "test": "mocha ./test_page/test_api.js",
+    "compile": "./node_modules/browserify/bin/cmd.js client.js > client-0.0.1.js"
   },
   "repository": {
     "type": "git",
@@ -13,8 +15,10 @@
   },
   "author": "",
   "dependencies": {
+    "browserify": "^11.1.0",
     "mongodb": "^2.0.42",
-    "socket.io": "^1.3.6"
+    "socket.io": "^1.3.6",
+    "socket.io-client": "^1.3.6"
   },
   "license": "ISC",
   "bugs": {

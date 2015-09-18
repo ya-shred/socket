@@ -1,8 +1,9 @@
+window.io = require('socket.io-client');
 /**
  * Клиентская библиотека для работы с сокет сервером.
  */
 
-// Для тестирования библиотеки
+// TEST: Для тестирования библиотеки
 window.socketUserId = 'test';
 
 /**
@@ -10,27 +11,27 @@ window.socketUserId = 'test';
  * @param url - url скрипта
  * @returns {Promise}
  */
-var loadScript = function (url) {
-    // Adding the script tag to the head as suggested before
-    var head = document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = url;
+//var loadScript = function (url) {
+//    // Adding the script tag to the head as suggested before
+//    var head = document.getElementsByTagName('head')[0];
+//    var script = document.createElement('script');
+//    script.type = 'text/javascript';
+//    script.src = url;
+//
+//    var res = new Promise(function (resolve, reject) {
+//        // Then bind the event to the callback function.
+//        // There are several events for cross browser compatibility.
+//        script.onreadystatechange = resolve;
+//        script.onload = resolve;
+//    });
+//
+//    // Fire the loading
+//    head.appendChild(script);
+//
+//    return res;
+//};
 
-    var res = new Promise(function (resolve, reject) {
-        // Then bind the event to the callback function.
-        // There are several events for cross browser compatibility.
-        script.onreadystatechange = resolve;
-        script.onload = resolve;
-    });
-
-    // Fire the loading
-    head.appendChild(script);
-
-    return res;
-};
-
-var socketClientUrl = "http://localhost:8008/socket.io/socket.io.js";
+//var socketClientUrl = "http://localhost:8008/socket.io/socket.io.js";
 var socketServerUrl = 'http://localhost:8008';
 var socket = null;
 
@@ -74,13 +75,10 @@ var model = {
      */
     _init: function () {
         model.inited = new Promise(function (resolve, reject) {
-            return loadScript(socketClientUrl)
-                .then(function () {
-                    return model._connect()
-                })
+            return model._connect()
                 .then(function () {
                     /**
-                     * Для тестирования. Выводим в консоль всё что приходит
+                     * TEST: Для тестирования. Выводим в консоль всё что приходит
                      */
                     model.listen(function (message) {
                         console.log(message);
