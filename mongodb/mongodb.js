@@ -1,7 +1,8 @@
 var MongoClient = require('mongodb').MongoClient;
+var config = require('config');
 
 // Connection URL
-var url = 'mongodb://localhost:27017/myproject';
+var url = config.get('dbConnectionUrl');
 var db = null;
 // Use connect method to connect to the Server
 MongoClient.connect(url, function (err, dbLink) {

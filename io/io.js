@@ -1,6 +1,6 @@
 //var redis = require('socket.io-redis');
-var settings = require('../settings/settings');
-var io = require('socket.io').listen(settings.socketPort);
+var config = require('config');
+var io = require('socket.io').listen(config.get('socketPort'));
 var api = require('../api/api');
 var mongo = require('../mongodb/mongodb.js');
 

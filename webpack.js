@@ -42,19 +42,8 @@ var run = null;
 
 var runServer = function() {
     console.log('start');
-    run = child('./bin/www.js');
+    run = child('./bin/app.js');
 };
-
-//runServer();
-//run.on('close', function (code, signal) {
-//    console.log('child process terminated due to receipt of signal ' + signal);
-//});
-//run.on('error', function (code, signal) {
-//    console.log('1 ', arguments);
-//});
-//run.on('exit', function (code, signal) {
-//    console.log('2 ', arguments);
-//});
 
 compilerServer.watch({ // watch options:
     aggregateTimeout: 300, // wait so long for more changes

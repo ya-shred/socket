@@ -1,0 +1,4 @@
+{
+  "socketPort": 8008,
+  "dbConnectionUrl": "mongodb://localhost:27017/myproject"
+}
