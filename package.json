@@ -4,10 +4,9 @@
   "description": "",
   "main": "client.js",
   "scripts": {
-    "postinstall": "./node_modules/browserify/bin/cmd.js client.js > client-0.0.1.js",
     "start": "node ./bin/www",
-    "test": "mocha ./test_page/test_api.js",
-    "compile": "./node_modules/browserify/bin/cmd.js client.js > client-0.0.1.js"
+    "debug": "node webpack",
+    "test": "mocha ./test_page/test_api.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +27,7 @@
   "devDependencies": {
     "chai": "^3.2.0",
     "chai-as-promised": "^5.1.0",
-    "mockery": "^1.4.0"
+    "mockery": "^1.4.0",
+    "webpack": "^1.12.2"
   }
 }

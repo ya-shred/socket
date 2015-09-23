@@ -6,7 +6,6 @@ var mongo = require('../mongodb/mongodb.js');
 
 //io.adapter(redis({ host: settings.redisHost, port: settings.redisPort}));
 
-
 var model = {
     start: function () {
         // Навешиваем обработчик на подключение нового клиента

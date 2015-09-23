@@ -1,1 +1,2 @@
-require('socket');
+socketUserId = 'test';
+socketClient._init(socketUserId);

@@ -2,10 +2,6 @@ window.io = require('socket.io-client');
 /**
  * Клиентская библиотека для работы с сокет сервером.
  */
-
-// TEST: Для тестирования библиотеки
-window.socketUserId = 'test';
-
 var socketServerUrl = 'http://localhost:8008';
 var socket = null;
 
@@ -47,9 +43,9 @@ var model = {
      * Запуск аутентификации после загрузки
      * @private
      */
-    _init: function () {
+    _init: function (authId) {
         model.inited = new Promise(function (resolve, reject) {
-            return model._connect()
+            return model._connect(authId)
                 .then(function () {
                     /**
                      * TEST: Для тестирования. Выводим в консоль всё что приходит
@@ -73,11 +69,10 @@ var model = {
      */
     inited: null,
     /**
-     * Аутентификация пользователя на сокетном сервере по userId из window.socketUserId
+     * Аутентификация пользователя на сокетном сервере по ключу
      * @private
      */
-    _authenticate: function () {
-        var userId = window.socketUserId;
+    _authenticate: function (userId) {
         return new Promise(function (resolve, reject) {
             if (userId) {
                 socket.on('authenticate', function (user) {
@@ -97,12 +92,12 @@ var model = {
      * @returns {Promise}
      * @private
      */
-    _connect: function () {
+    _connect: function (authId) {
         socket = io.connect(socketServerUrl);
         return new Promise(function (resolve, reject) {
             socket.on('connect', function () {
                 console.log('connected');
-                model._authenticate()
+                model._authenticate(authId)
                     .then(function () {
                             resolve();
                         }, function (error) {
@@ -116,6 +111,9 @@ var model = {
      * @param {Function} callback - вызывается на входящее сообщение
      */
     listen: function (callback) {
+        if (!model.inited) {
+            return 'Модуль не инициализирован';
+        }
         socket.on('message', function (message) {
             callback(message);
         });
@@ -124,6 +122,10 @@ var model = {
      * Интерфейс для отправки команд
      */
     send: function(params) {
+        if (!model.inited) {
+            return 'Модуль не инициализирован';
+        }
+
         if (params.type && api[params.type]) {
             var message = api[params.type](params);
             if (message.error) {
@@ -136,7 +138,4 @@ var model = {
         }
     }
 };
-
-model._init();
-
 window.socketClient = model;
