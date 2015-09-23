@@ -11,7 +11,6 @@
   },
   "author": "",
   "dependencies": {
-    "shri": "https://github.com/ya-shred/socket.git#4c16a2bd434bb24ce30d59af21a091cc0b5726c3"
   },
   "license": "ISC",
   "bugs": {

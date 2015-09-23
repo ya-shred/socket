@@ -6,32 +6,6 @@ window.io = require('socket.io-client');
 // TEST: Для тестирования библиотеки
 window.socketUserId = 'test';
 
-/**
- * Вспомогательная функция для загрузки стороннего скрипта
- * @param url - url скрипта
- * @returns {Promise}
- */
-//var loadScript = function (url) {
-//    // Adding the script tag to the head as suggested before
-//    var head = document.getElementsByTagName('head')[0];
-//    var script = document.createElement('script');
-//    script.type = 'text/javascript';
-//    script.src = url;
-//
-//    var res = new Promise(function (resolve, reject) {
-//        // Then bind the event to the callback function.
-//        // There are several events for cross browser compatibility.
-//        script.onreadystatechange = resolve;
-//        script.onload = resolve;
-//    });
-//
-//    // Fire the loading
-//    head.appendChild(script);
-//
-//    return res;
-//};
-
-//var socketClientUrl = "http://localhost:8008/socket.io/socket.io.js";
 var socketServerUrl = 'http://localhost:8008';
 var socket = null;
 

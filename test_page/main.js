@@ -1,1 +1,1 @@
-require('shri-socket');
+require('socket');
