@@ -40,10 +40,11 @@ var model = {
                     // Процессим сообщение
                     api.processMessage(userInfo, message)
                         // Если обработка сообщения прошла успешна
-                        .then(function (channel, message) {
+                        .then(function (response) {
+                            console.log('sending', response);
                             // Отправляем необходимые данные в комнату
-                            if (message) {
-                                io.to(channel).send(message);
+                            if (response.message) {
+                                io.to(response.channel).send(response.message);
                             }
                         })
                         // Если обработка прошла с ошибкой, отправляем сообщение об ошибке

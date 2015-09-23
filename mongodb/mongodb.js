@@ -60,7 +60,7 @@ model = {
 
     getChannels: function (user) {
         return new Promise(function (resolve, reject) {
-            resolve([{channel: 'test', message: 'test'}]);
+            resolve([{channelId: 'test'}]);
         });
     },
 
