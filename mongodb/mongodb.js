@@ -6,7 +6,7 @@ var url = config.get('dbConnectionUrl');
 var db = null;
 // Use connect method to connect to the Server
 MongoClient.connect(url, function (err, dbLink) {
-    console.log("Connected correctly to server");
+    console.log("Connected correctly to mongo server");
 
     db = dbLink;
     db.collection('messages').remove();

@@ -4,7 +4,7 @@ var configClient = {
     entry: "./client.js",
 
     output: {
-        filename: "client-0.0.1.js"
+        filename: "browser.js"
     },
 
     plugins: [

@@ -2,7 +2,7 @@ window.io = require('socket.io-client');
 /**
  * Клиентская библиотека для работы с сокет сервером.
  */
-var socketServerUrl = 'http://localhost:8008';
+var socketServerUrl = 'https://hidden-springs-6887.herokuapp.com/';
 var socket = null;
 
 /**
