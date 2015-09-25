@@ -1,6 +1,12 @@
 var mongo = require('../mongodb/mongodb.js');
 //var socketServer = require('../io/io.js');
 
+var MESSAGE_HANDLERS = {
+    authenticate: 'onAuthenticateMessage',
+    error: 'onErrorMessage',
+    send_message: 'onSendMessage'
+};
+
 var model = {
     handlers: {
         onAuthenticateMessage: function() {
@@ -44,9 +50,9 @@ var model = {
      * @param {Message} message - сообщение отправителя
      */
     processMessage: function (user, message) {
-        var messageHandler = model.handlers[model.MESSAGE_HANDLERS[message.type]];
+        var messageHandler = model.handlers[MESSAGE_HANDLERS[message.type]];
         if (!messageHandler) {
-            return Promise.resolve(model.handlers[model.MESSAGE_HANDLERS['error']]());
+            return Promise.resolve(model.handlers[MESSAGE_HANDLERS['error']]());
         }
 
         return Promise.resolve(messageHandler(user, message)); // чтоб всегда гарантировать Promise на выходе
@@ -77,12 +83,6 @@ var model = {
             }
         }
     }
-};
-
-model.MESSAGE_HANDLERS = {
-    authenticate: 'onAuthenticateMessage',
-    error: 'onErrorMessage',
-    send_message: 'onSendMessage'
 };
 
 module.exports = model;

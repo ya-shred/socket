@@ -2,7 +2,7 @@ window.io = require('socket.io-client');
 /**
  * Клиентская библиотека для работы с сокет сервером.
  */
-var socketServerUrl = 'https://shielded-retreat-1827.herokuapp.com/';
+var socketServerUrl = 'https://shri-socket.herokuapp.com/';
 var socket = null;
 
 /**
