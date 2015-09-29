@@ -27,10 +27,7 @@ var api = {
         }
         return {
             type: 'send_message',
-            data: {
-                channel: params.channel,
-                text: params.message
-            }
+            data: params
         }
     }
 };
