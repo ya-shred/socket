@@ -48,7 +48,8 @@
 	/**
 	 * Клиентская библиотека для работы с сокет сервером.
 	 */
-	var socketServerUrl = 'https://shri-socket.herokuapp.com/';
+	var socketServerUrl = 'http://localhost:8010/';
+	//var socketServerUrl = 'https://shri-socket.herokuapp.com/';
 	var socket = null;
 
 	/**
@@ -90,7 +91,7 @@
 	     * @private
 	     */
 	    _init: function (authId) {
-	        model.inited = new Promise(function (resolve, reject) {
+	        return model.inited = new Promise(function (resolve, reject) {
 	            return model._connect(authId)
 	                .then(function () {
 	                    /**
@@ -102,7 +103,7 @@
 	                    resolve();
 	                })
 	                .catch(function (error) {
-	                    reject(error);
+	                    return reject(error);
 	                });
 	        });
 	    },
@@ -121,12 +122,18 @@
 	    _authenticate: function (userId) {
 	        return new Promise(function (resolve, reject) {
 	            if (userId) {
-	                socket.on('authenticate', function (user) {
-	                    console.log('authenticated', user);
-	                    model.userInfo = user;
-	                    socket.removeAllListeners('authenticate');
-	                    resolve(user);
-	                });
+	                var callback = function (message) {
+	                    console.log('authenticated', message);
+	                    socket.removeListener('message', callback);
+
+	                    if (message.type !== 'authenticated') {
+	                        return reject(message.data.message);
+	                    }
+	                    model.userInfo = message.data.user;
+	                    resolve(model.userInfo);
+	                };
+
+	                socket.on('message', callback);
 	                socket.emit('authenticate', api.authenticate(userId));
 	            } else {
 	                reject('Нет авторизационного ключа');
