@@ -7,6 +7,7 @@
 
 Запуск
 - npm i
+- добавить mongodb/bin в $PATH для window
 - запустить mongodb: mongod --dbpath=DB_PATH --port 27017 # DB_PATH для window - C:/data/db
 - npm start # запуск сокет сервера
 - открыть тестовую страницу: test_page/index.html
