@@ -1,16 +1,24 @@
-Run
+Запуск сервера
 -------
 
-Install before
+Установить до запуска
 - npm
 - mongodb
 
-Execute
+Запуск
 - npm i
-- Run mongodb: mongod --dbpath=DB_PATH --port 27017 # DB_PATH for window - C:/data/db
-- npm start # load socket.io
-- open test page: test_page/index.html
+- запустить mongodb: mongod --dbpath=DB_PATH --port 27017 # DB_PATH для window - C:/data/db
+- npm start # запуск сокет сервера
+- открыть тестовую страницу: test_page/index.html
 
-For testing
-- install Mocha
-- run test: npm test
+Для тестирования
+- установить Mocha
+- запуск тестов: npm test
+
+### Использование клиентской библиотеки.
+
+В папке test_page лежит тестовое использование клиентской библиотеки. Её можно подключить через bower, npm.
+
+### Запуск при тестировании
+Автоматическая перезагрузка сокетного сервера при перезагрузке. Автоматическая сборка клиентской библиотеки при её изменении. 
+- npm debug

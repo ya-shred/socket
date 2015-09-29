@@ -1,11 +1,12 @@
 {
-  "name": "socket",
+  "name": "shri-socket",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "client.js",
   "scripts": {
-    "start": "node ./bin/www",
-    "test": "mocha ./test_page/test.js"
+    "start": "node ./bin/app",
+    "debug": "node webpack",
+    "test": "mocha ./test_page/test_api.js"
   },
   "repository": {
     "type": "git",
@@ -13,13 +14,21 @@
   },
   "author": "",
   "dependencies": {
-    "expect.js": "^0.3.1",
+    "browserify": "^11.1.0",
+    "config": "^1.16.0",
     "mongodb": "^2.0.42",
-    "socket.io": "^1.3.6"
+    "socket.io": "^1.3.6",
+    "socket.io-client": "^1.3.6"
   },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ya-shred/socket/issues"
   },
-  "homepage": "https://github.com/ya-shred/socket#readme"
+  "homepage": "https://github.com/ya-shred/socket#readme",
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "chai-as-promised": "^5.1.0",
+    "mockery": "^1.4.0",
+    "webpack": "^1.12.2"
+  }
 }
