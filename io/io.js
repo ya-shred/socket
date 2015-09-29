@@ -72,12 +72,14 @@ var model = {
      * @returns {Promise}
      */
     checkUser: function (socket) {
+        console.log('checkUser');
         return new Promise(function (resolve, reject) {
             socket.on('authenticate', function (message) {
+                console.log('authenticate', message);
                 socket.removeAllListeners('authenticate');
                 api.processMessage(null, message)
                     .then(function (response) {
-                        socket.emit('authenticate', response.message);
+                        socket.send(response.message);
                         resolve(response.user);
                     })
                     .catch(function (error) {
