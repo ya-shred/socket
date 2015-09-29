@@ -2,8 +2,8 @@ window.io = require('socket.io-client');
 /**
  * Клиентская библиотека для работы с сокет сервером.
  */
-var socketServerUrl = 'http://localhost:8010/';
-//var socketServerUrl = 'https://shri-socket.herokuapp.com/';
+//var socketServerUrl = 'http://localhost:8010/';
+var socketServerUrl = 'https://shri-socket.herokuapp.com/';
 var socket = null;
 
 /**
