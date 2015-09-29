@@ -73,7 +73,10 @@
 	        }
 	        return {
 	            type: 'send_message',
-	            data: params
+	            data: {
+	                channel: params.channel,
+	                text: params.message
+	            }
 	        }
 	    }
 	};
