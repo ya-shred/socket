@@ -48,6 +48,7 @@
 	/**
 	 * Клиентская библиотека для работы с сокет сервером.
 	 */
+	//var socketServerUrl = 'http://localhost:8010/';
 	var socketServerUrl = 'https://shri-socket.herokuapp.com/';
 	var socket = null;
 
@@ -72,10 +73,7 @@
 	        }
 	        return {
 	            type: 'send_message',
-	            data: {
-	                channel: params.channel,
-	                text: params.message
-	            }
+	            data: params
 	        }
 	    }
 	};
@@ -89,20 +87,20 @@
 	     * Запуск аутентификации после загрузки
 	     * @private
 	     */
-	    _init: function (authId) {
-	        model.inited = new Promise(function (resolve, reject) {
+	    init: function (authId) {
+	        return model.inited = new Promise(function (resolve, reject) {
 	            return model._connect(authId)
-	                .then(function () {
+	                .then(function (userInfo) {
 	                    /**
 	                     * TEST: Для тестирования. Выводим в консоль всё что приходит
 	                     */
 	                    model.listen(function (message) {
 	                        console.log(message);
 	                    });
-	                    resolve();
+	                    resolve(userInfo);
 	                })
 	                .catch(function (error) {
-	                    reject(error);
+	                    return reject(error);
 	                });
 	        });
 	    },
@@ -121,12 +119,18 @@
 	    _authenticate: function (userId) {
 	        return new Promise(function (resolve, reject) {
 	            if (userId) {
-	                socket.on('authenticate', function (user) {
-	                    console.log('authenticated', user);
-	                    model.userInfo = user;
-	                    socket.removeAllListeners('authenticate');
-	                    resolve(user);
-	                });
+	                var callback = function (message) {
+	                    console.log('authenticated', message);
+	                    socket.removeListener('message', callback);
+
+	                    if (message.type !== 'authenticated') {
+	                        return reject(message.data.message);
+	                    }
+	                    model.userInfo = message.data.user;
+	                    resolve(model.userInfo);
+	                };
+
+	                socket.on('message', callback);
 	                socket.emit('authenticate', api.authenticate(userId));
 	            } else {
 	                reject('Нет авторизационного ключа');
@@ -144,8 +148,8 @@
 	            socket.on('connect', function () {
 	                console.log('connected');
 	                model._authenticate(authId)
-	                    .then(function () {
-	                            resolve();
+	                    .then(function (userInfo) {
+	                            resolve(userInfo);
 	                        }, function (error) {
 	                            reject(error);
 	                        })

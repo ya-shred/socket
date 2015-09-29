@@ -107,6 +107,7 @@ var model = {
      * @returns {Promise.<T>}
      */
     joinUserInfo: function (user, socket) {
+        socket.join('general');
         return mongo.getUsers(user)
             .then(function (users) {
                 users.forEach(function (user) {

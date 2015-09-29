@@ -23,11 +23,11 @@ var model = {
         },
         onSendMessage: function(user, message) {
             return {
-                channel: 'channel_' + user.id,
+                channel: message.data.channel,
                 message: {
                     type: 'new_message',
                     data: {
-                        message: message,
+                        message: message.data.message,
                         user: user,
                         datetime: +new Date()
                     }
