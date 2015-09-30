@@ -29,11 +29,6 @@ var api = {
             type: 'send_message',
             data: params
         }
-    },
-    users_info_request: function () {
-        return {
-            type: 'users_info_request'
-        }
     }
 };
 
