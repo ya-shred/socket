@@ -62,6 +62,7 @@ var model = {
             })
             // Если что-то пошло не так, то отключаем пользователя
             .catch(function (error) {
+                console.log('error', error);
                 socket.send(error);
                 socket.disconnect();
                 model.disconnected(userInfo);
@@ -101,7 +102,7 @@ var model = {
                 channels.forEach(function (channel) {
                     socket.join('channel_' + channel.channelId);
                 });
-                console.log('send channelsList', channels);
+                console.log('send channelsList');
                 socket.send(api.channelsList(channels));
             });
     },
@@ -117,7 +118,7 @@ var model = {
                 users.forEach(function (user) {
                     socket.join('user_' + user.id);
                 });
-                console.log('send usersList', users);
+                console.log('send usersList');
                 socket.send(api.usersList(users));
             });
 
