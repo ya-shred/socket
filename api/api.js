@@ -5,8 +5,7 @@ var backend = require('../backend/backend.js');
 var MESSAGE_HANDLERS = {
     authenticate: 'onAuthenticateMessage',
     error: 'onErrorMessage',
-    send_message: 'onSendMessage',
-    users_info_request: 'onRequestUsersInfo'
+    send_message: 'onSendMessage'
 };
 
 var model = {
@@ -15,7 +14,6 @@ var model = {
             var userId = message.data.userId;
             return backend.checkUser(userId)
                 .then(function (userInfo) {
-                    console.log(userInfo);
                     mongo.checkAndAddUser(userInfo);
                     return {
                         user: userInfo,
