@@ -30,7 +30,7 @@ var model = {
             .then(function (user) {
                 console.log('user checked');
                 userInfo = user;
-                // Подключаем пользователя к его каналам и к информации о пользователях
+                // Подключаем пользователя к его каналам, информации о пользователях и отправляем ему эти данные
                 return Promise.all([model.joinChannel(user, socket), model.joinUserInfo(user, socket)]);
             })
             .then(function () {
@@ -78,11 +78,11 @@ var model = {
                 console.log('authenticate', message);
                 socket.removeAllListeners('authenticate');
                 api.processMessage(null, message)
-                    .then(function (response) {
+                    .then(function (response) { // Проверка прошла
                         socket.send(response.message);
                         resolve(response.user);
                     })
-                    .catch(function (error) {
+                    .catch(function (error) { // Проверка не прошла
                         reject(error);
                     });
             });
@@ -100,6 +100,8 @@ var model = {
                 channels.forEach(function (channel) {
                     socket.join('channel_' + channel.channelId);
                 });
+                console.log('send channelsList', channels);
+                socket.send(api.channelsList(channels));
             });
     },
     /**
@@ -109,12 +111,13 @@ var model = {
      * @returns {Promise.<T>}
      */
     joinUserInfo: function (user, socket) {
-        socket.join('general');
         return mongo.getUsers(user)
             .then(function (users) {
                 users.forEach(function (user) {
                     socket.join('user_' + user.id);
                 });
+                console.log('send usersList', users);
+                socket.send(api.usersList(users));
             });
 
     },
@@ -131,6 +134,7 @@ var model = {
      * @param {User} user
      */
     disconnected: function (user) {
+        console.log('disconnected', 'user_' + user.id);
         io.to('user_' + user.id).send(api.disconnected(user));
     }
 };

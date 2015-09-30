@@ -2,8 +2,8 @@ window.io = require('socket.io-client');
 /**
  * Клиентская библиотека для работы с сокет сервером.
  */
-//var socketServerUrl = 'http://localhost:8010/';
-var socketServerUrl = 'https://shri-socket.herokuapp.com/';
+var socketServerUrl = 'http://localhost:8010/';
+//var socketServerUrl = 'https://shri-socket.herokuapp.com/';
 var socket = null;
 
 /**
@@ -18,16 +18,21 @@ var api = {
             }
         }
     },
-    send_message: function(params) {
+    send_message: function (params) {
         if (!params.channel) {
-            return { error: 'Не указан канал отправки' };
+            return {error: 'Не указан канал отправки'};
         }
         if (!params.message) {
-            return { error: 'Пустое сообщение недопустимо' };
+            return {error: 'Пустое сообщение недопустимо'};
         }
         return {
             type: 'send_message',
             data: params
+        }
+    },
+    users_info_request: function () {
+        return {
+            type: 'users_info_request'
         }
     }
 };
@@ -103,10 +108,10 @@ var model = {
                 console.log('connected');
                 model._authenticate(authId)
                     .then(function (userInfo) {
-                            resolve(userInfo);
-                        }, function (error) {
-                            reject(error);
-                        })
+                        resolve(userInfo);
+                    }, function (error) {
+                        reject(error);
+                    })
             });
         });
     },
@@ -125,7 +130,7 @@ var model = {
     /**
      * Интерфейс для отправки команд
      */
-    send: function(params) {
+    send: function (params) {
         if (!model.inited) {
             return 'Модуль не инициализирован';
         }

@@ -5,15 +5,18 @@ var backend = require('../backend/backend.js');
 var MESSAGE_HANDLERS = {
     authenticate: 'onAuthenticateMessage',
     error: 'onErrorMessage',
-    send_message: 'onSendMessage'
+    send_message: 'onSendMessage',
+    users_info_request: 'onRequestUsersInfo'
 };
 
 var model = {
     handlers: {
-        onAuthenticateMessage: function(_, message) {
+        onAuthenticateMessage: function (_, message) {
             var userId = message.data.userId;
             return backend.checkUser(userId)
                 .then(function (userInfo) {
+                    console.log(userInfo);
+                    mongo.checkAndAddUser(userInfo);
                     return {
                         user: userInfo,
                         message: {
@@ -24,22 +27,14 @@ var model = {
                         }
                     }
                 })
-                .catch(function (error) {
-                    return Promise.reject({
-                        type: 'status',
-                        data: {
-                            status: 'error',
-                            message: error
-                        }
-                    })
-                })
         },
-        onSendMessage: function(user, message) {
+        onSendMessage: function (user, message) {
             return {
                 channel: message.data.channel,
                 message: {
                     type: 'new_message',
                     data: {
+                        channel: message.data.channel,
                         message: message.data.message,
                         user: user,
                         datetime: +new Date()
@@ -47,7 +42,7 @@ var model = {
                 }
             }
         },
-        onErrorMessage: function() {
+        onErrorMessage: function () {
             return Promise.reject({
                 type: 'status',
                 data: {
@@ -68,7 +63,16 @@ var model = {
             return Promise.resolve(model.handlers[MESSAGE_HANDLERS['error']]());
         }
 
-        return Promise.resolve(messageHandler(user, message)); // чтоб всегда гарантировать Promise на выходе
+        return Promise.resolve(messageHandler(user, message))
+            .catch(function (error) {
+                return Promise.reject({
+                    type: 'status',
+                    data: {
+                        status: 'error',
+                        message: error
+                    }
+                });
+            }); // чтоб всегда гарантировать Promise на выходе
     },
     /**
      * Сообщение, когда пользователь отключился
@@ -93,6 +97,30 @@ var model = {
             type: 'user_connected',
             data: {
                 userId: user.id
+            }
+        }
+    },
+    /**
+     * Отправляем информацию о каналах
+     * @param channels
+     */
+    channelsList: function (channels) {
+        return {
+            type: 'channels_info',
+            data: {
+                channels: channels
+            }
+        }
+    },
+    /**
+     * Отправляем информацию о пользователях
+     * @param users
+     */
+    usersList: function (users) {
+        return {
+            type: 'users_info',
+            data: {
+                users: users
             }
         }
     }
