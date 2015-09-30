@@ -30,6 +30,7 @@ var model = {
             .then(function (user) {
                 console.log('user checked');
                 userInfo = user;
+                socket.join('general'); // Сейчас подключаем к общему каналу, по которому сейчас идут сообщения
                 // Подключаем пользователя к его каналам, информации о пользователях и отправляем ему эти данные
                 return Promise.all([model.joinChannel(user, socket), model.joinUserInfo(user, socket)]);
             })

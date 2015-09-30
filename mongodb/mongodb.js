@@ -97,7 +97,17 @@ model = {
 
     getChannels: function (user) {
         return new Promise(function (resolve, reject) {
-            resolve([{channelId: 'test'}, {channelId: 'general'}]);
+            // Get the documents collection
+            var collection = db.collection('channels');
+            // Find some documents
+            collection.find().toArray(function (err, result) {
+                console.log(result);
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve(result);
+            });
         });
     },
 
