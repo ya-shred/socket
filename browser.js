@@ -48,8 +48,14 @@
 	/**
 	 * Клиентская библиотека для работы с сокет сервером.
 	 */
-	//var socketServerUrl = 'http://localhost:8010/';
-	var socketServerUrl = 'https://shri-socket.herokuapp.com/';
+	var socketServerUrl;
+
+	if (true) {
+	    socketServerUrl = 'https://shri-socket.herokuapp.com/';
+	} else {
+	    socketServerUrl = 'http://localhost:8010/';
+	}
+
 	var socket = null;
 
 	/**

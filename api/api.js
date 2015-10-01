@@ -13,7 +13,8 @@ var model = {
         onAuthenticateMessage: function (_, message) {
             var userId = message.data.userId;
             var user;
-            return backend.checkUser(userId)
+            return backend
+                .checkUser(userId)
                 .then(function (userInfo) {
                     user = userInfo;
                     return mongo.checkAndAddUser(userInfo);
