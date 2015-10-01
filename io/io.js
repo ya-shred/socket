@@ -115,7 +115,17 @@ var model = {
     joinUserInfo: function (user, socket) {
         return mongo.getUsers(user)
             .then(function (users) {
+                var rooms = Object.keys(io.sockets.adapter.rooms)
+                    .map(function (room) {
+                       return +room.split('user_')[1];
+                    })
+                    .filter(function(room) {
+                        return !!room;
+                    });
                 users.forEach(function (user) {
+                    if (rooms.indexOf(user.id)) {
+                        user.online = true;
+                    }
                     socket.join('user_' + user.id);
                 });
                 console.log('send usersList');
