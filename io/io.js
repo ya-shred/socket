@@ -32,7 +32,7 @@ var model = {
                 userInfo = user;
                 socket.join('general'); // Сейчас подключаем к общему каналу, по которому сейчас идут сообщения
                 // Подключаем пользователя к его каналам, информации о пользователях и отправляем ему эти данные
-                return Promise.all([model.joinChannel(user, socket), model.joinUserInfo(user, socket)]);
+                return Promise.all([model.joinChannel(user, socket), model.joinUserInfo(user, socket), model.joinSelf(user, socket)]);
             })
             .then(function () {
                 // Сообщаем всем что пользователь подключился
@@ -112,25 +112,33 @@ var model = {
      * @param socket
      * @returns {Promise.<T>}
      */
-    joinUserInfo: function (user, socket) {
-        return mongo.getUsers(user)
+    joinUserInfo: function (currentUser, socket) {
+        return mongo.getUsers(currentUser)
             .then(function (users) {
                 var rooms = Object.keys(io.sockets.adapter.rooms)
                     .map(function (room) {
-                       return +room.split('user_')[1];
+                        return room.split('self_')[1];
                     })
-                    .filter(function(room) {
+                    .filter(function (room) {
                         return !!room;
                     });
                 users.forEach(function (user) {
-                    if (rooms.indexOf(user.id)) {
-                        user.online = true;
-                    }
+                    user.online = rooms.indexOf(user.id) !== -1;
                     socket.join('user_' + user.id);
                 });
                 console.log('send usersList');
                 socket.send(api.usersList(users));
             });
+
+    },
+    /**
+     * Подключаем пользователя в его личный канал. Сюда передаются сообщения только для конкретного пользователя
+     * @param user
+     * @param socket
+     * @returns {Promise.<T>}
+     */
+    joinSelf: function (user, socket) {
+        socket.join('self_' + user.id);
 
     },
     /**
