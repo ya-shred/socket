@@ -112,14 +112,14 @@ var model = {
      * @param socket
      * @returns {Promise.<T>}
      */
-    joinUserInfo: function (user, socket) {
-        return mongo.getUsers(user)
+    joinUserInfo: function (currentUser, socket) {
+        return mongo.getUsers(currentUser)
             .then(function (users) {
                 var rooms = Object.keys(io.sockets.adapter.rooms)
                     .map(function (room) {
-                       return +room.split('self_')[1];
+                        return room.split('self_')[1];
                     })
-                    .filter(function(room) {
+                    .filter(function (room) {
                         return !!room;
                     });
                 users.forEach(function (user) {
@@ -137,7 +137,7 @@ var model = {
      * @param socket
      * @returns {Promise.<T>}
      */
-    joinSelf: function(user, socket) {
+    joinSelf: function (user, socket) {
         socket.join('self_' + user.id);
 
     },
@@ -155,8 +155,7 @@ var model = {
      */
     disconnected: function (user) {
         console.log('disconnected', 'user_' + user.id);
-        var room = 'user_' + user.id;
-        io.to(room).send(api.disconnected(user));
+        io.to('user_' + user.id).send(api.disconnected(user));
     }
 };
 
