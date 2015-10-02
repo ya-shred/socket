@@ -12,14 +12,14 @@ var model = {
     handlers: {
         onAuthenticateMessage: function (_, message) {
             var userId = message.data.userId;
-            var user;
             return backend
                 .checkUser(userId)
-                .then(function (userInfo) {
-                    user = userInfo;
-                    return mongo.checkAndAddUser(userInfo);
+                .then(function (user) {
+                    return mongo
+                        .checkAndAddUser(user)
+                        .then(() => user);
                 })
-                .then(function () {
+                .then(function (user) {
                     return {
                         user: user,
                         message: {
