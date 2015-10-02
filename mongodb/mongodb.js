@@ -18,6 +18,43 @@ model = {
         db.close();
     },
 
+    checkAndAddUser: function (user) {
+        return model.getUser(user)
+            .catch(function () {
+                return model.addUser(user);
+            })
+    },
+
+    addUser: function (user) {
+        return new Promise(function (resolve, reject) {
+            var collection = db.collection('users');
+            collection.insert(user, function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve('added')
+                }
+            });
+        });
+    },
+
+    getUser: function (user) {
+        return new Promise(function (resolve, reject) {
+            var collection = db.collection('users');
+            collection.findOne({id: user.id}, function (err, doc) {
+                if (err) {
+                    reject(err);
+                }
+
+                if (doc) {
+                    resolve(doc);
+                } else {
+                    reject('not found');
+                }
+            });
+        })
+    },
+
     save: function (data) {
         return new Promise(function (resolve, reject) {
             // Get the documents collection
@@ -60,13 +97,31 @@ model = {
 
     getChannels: function (user) {
         return new Promise(function (resolve, reject) {
-            resolve([{channelId: 'test'}]);
+            // Get the documents collection
+            var collection = db.collection('channels');
+            // Find some documents
+            collection.find().toArray(function (err, result) {
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve(result);
+            });
         });
     },
 
     getUsers: function (user) {
         return new Promise(function (resolve, reject) {
-            resolve([{id: 'user', message: 'test'}]);
+            // Get the documents collection
+            var collection = db.collection('users');
+            // Find some documents
+            collection.find().toArray(function (err, result) {
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve(result);
+            });
         });
     }
 };

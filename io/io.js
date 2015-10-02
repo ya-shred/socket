@@ -30,7 +30,8 @@ var model = {
             .then(function (user) {
                 console.log('user checked');
                 userInfo = user;
-                // Подключаем пользователя к его каналам и к информации о пользователях
+                socket.join('general'); // Сейчас подключаем к общему каналу, по которому сейчас идут сообщения
+                // Подключаем пользователя к его каналам, информации о пользователях и отправляем ему эти данные
                 return Promise.all([model.joinChannel(user, socket), model.joinUserInfo(user, socket)]);
             })
             .then(function () {
@@ -61,6 +62,7 @@ var model = {
             })
             // Если что-то пошло не так, то отключаем пользователя
             .catch(function (error) {
+                console.log('error', error);
                 socket.send(error);
                 socket.disconnect();
                 model.disconnected(userInfo);
@@ -78,11 +80,11 @@ var model = {
                 console.log('authenticate', message);
                 socket.removeAllListeners('authenticate');
                 api.processMessage(null, message)
-                    .then(function (response) {
+                    .then(function (response) { // Проверка прошла
                         socket.send(response.message);
                         resolve(response.user);
                     })
-                    .catch(function (error) {
+                    .catch(function (error) { // Проверка не прошла
                         reject(error);
                     });
             });
@@ -100,6 +102,8 @@ var model = {
                 channels.forEach(function (channel) {
                     socket.join('channel_' + channel.channelId);
                 });
+                console.log('send channelsList');
+                socket.send(api.channelsList(channels));
             });
     },
     /**
@@ -109,12 +113,23 @@ var model = {
      * @returns {Promise.<T>}
      */
     joinUserInfo: function (user, socket) {
-        socket.join('general');
         return mongo.getUsers(user)
             .then(function (users) {
+                var rooms = Object.keys(io.sockets.adapter.rooms)
+                    .map(function (room) {
+                       return +room.split('user_')[1];
+                    })
+                    .filter(function(room) {
+                        return !!room;
+                    });
                 users.forEach(function (user) {
+                    if (rooms.indexOf(user.id)) {
+                        user.online = true;
+                    }
                     socket.join('user_' + user.id);
                 });
+                console.log('send usersList');
+                socket.send(api.usersList(users));
             });
 
     },
@@ -131,6 +146,7 @@ var model = {
      * @param {User} user
      */
     disconnected: function (user) {
+        console.log('disconnected', 'user_' + user.id);
         io.to('user_' + user.id).send(api.disconnected(user));
     }
 };
