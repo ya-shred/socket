@@ -17,7 +17,10 @@ var model = {
                 .then(function (user) {
                     return mongo
                         .checkAndAddUser(user)
-                        .then(() => user);
+                        .then(function (isNew) {
+                            user.isNew = !!isNew;
+                            return user;
+                        });
                 })
                 .then(function (user) {
                     return {
@@ -124,6 +127,18 @@ var model = {
             type: 'users_info',
             data: {
                 users: users
+            }
+        }
+    },
+    /**
+     * оповещает всех о новом пользователе
+     * @param users
+     */
+    newUser: function (user) {
+        return {
+            type: 'new_user',
+            data: {
+                user: user
             }
         }
     }

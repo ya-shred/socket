@@ -20,15 +20,25 @@ model = {
 
     checkAndAddUser: function (user) {
         return model.getUser(user)
-            .catch(function () {
-                return model.addUser(user);
+            .then(function () {
+                return false;
             })
+            .catch(function (err) {
+                if (err === 'not found') {
+                    return model.addUser(user);
+                } else {
+                    return Promise.reject(err);
+                }
+            })
+            .then(function () {
+                return true;
+            });
     },
 
     addUser: function (user) {
         return new Promise(function (resolve, reject) {
             var collection = db.collection('users');
-            collection.insert(user, function(err) {
+            collection.insert(user, function (err) {
                 if (err) {
                     reject(err);
                 } else {

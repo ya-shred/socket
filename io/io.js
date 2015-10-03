@@ -30,6 +30,9 @@ var model = {
             .then(function (user) {
                 console.log('user checked');
                 userInfo = user;
+                if (user.isNew) {
+                    model.connectNewUser(user);
+                }
                 socket.join('general'); // Сейчас подключаем к общему каналу, по которому сейчас идут сообщения
                 // Подключаем пользователя к его каналам, информации о пользователях и отправляем ему эти данные
                 return Promise.all([model.joinChannel(user, socket), model.joinUserInfo(user, socket), model.joinSelf(user, socket)]);
@@ -156,6 +159,16 @@ var model = {
     disconnected: function (user) {
         console.log('disconnected', 'user_' + user.id);
         io.to('user_' + user.id).send(api.disconnected(user));
+    },
+    /**
+     * Залогинился новый пользователь, сообщить всем о нём
+     * @param user
+     */
+    connectNewUser: function(user) {
+        io.sockets.sockets.forEach(function(item) {
+            item.join('user_' + user.id);
+        });
+        io.to('user_' + user.id).send(api.newUser(user));
     }
 };
 

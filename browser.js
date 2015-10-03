@@ -2196,10 +2196,10 @@
 	var parser = __webpack_require__(6);
 	var on = __webpack_require__(47);
 	var bind = __webpack_require__(48);
-	var object = __webpack_require__(51);
+	var object = __webpack_require__(49);
 	var debug = __webpack_require__(5)('socket.io-client:manager');
 	var indexOf = __webpack_require__(42);
-	var Backoff = __webpack_require__(52);
+	var Backoff = __webpack_require__(50);
 
 	/**
 	 * Module exports
@@ -5054,7 +5054,7 @@
 	      }
 
 	      for (var key in obj) {
-	        if (obj.hasOwnProperty(key) && _hasBinary(obj[key])) {
+	        if (Object.prototype.hasOwnProperty.call(obj, key) && _hasBinary(obj[key])) {
 	          return true;
 	        }
 	      }
@@ -5215,7 +5215,7 @@
 /* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/*! http://mths.be/utf8js v2.0.0 by @mathias */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/*! https://mths.be/utf8js v2.0.0 by @mathias */
 	;(function(root) {
 
 		// Detect free variables `exports`
@@ -5236,7 +5236,7 @@
 
 		var stringFromCharCode = String.fromCharCode;
 
-		// Taken from http://mths.be/punycode
+		// Taken from https://mths.be/punycode
 		function ucs2decode(string) {
 			var output = [];
 			var counter = 0;
@@ -5263,7 +5263,7 @@
 			return output;
 		}
 
-		// Taken from http://mths.be/punycode
+		// Taken from https://mths.be/punycode
 		function ucs2encode(array) {
 			var length = array.length;
 			var index = -1;
@@ -5281,6 +5281,14 @@
 			return output;
 		}
 
+		function checkScalarValue(codePoint) {
+			if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
+				throw Error(
+					'Lone surrogate U+' + codePoint.toString(16).toUpperCase() +
+					' is not a scalar value'
+				);
+			}
+		}
 		/*--------------------------------------------------------------------------*/
 
 		function createByte(codePoint, shift) {
@@ -5296,6 +5304,7 @@
 				symbol = stringFromCharCode(((codePoint >> 6) & 0x1F) | 0xC0);
 			}
 			else if ((codePoint & 0xFFFF0000) == 0) { // 3-byte sequence
+				checkScalarValue(codePoint);
 				symbol = stringFromCharCode(((codePoint >> 12) & 0x0F) | 0xE0);
 				symbol += createByte(codePoint, 6);
 			}
@@ -5310,11 +5319,6 @@
 
 		function utf8encode(string) {
 			var codePoints = ucs2decode(string);
-
-			// console.log(JSON.stringify(codePoints.map(function(x) {
-			// 	return 'U+' + x.toString(16).toUpperCase();
-			// })));
-
 			var length = codePoints.length;
 			var index = -1;
 			var codePoint;
@@ -5385,6 +5389,7 @@
 				byte3 = readContinuationByte();
 				codePoint = ((byte1 & 0x0F) << 12) | (byte2 << 6) | byte3;
 				if (codePoint >= 0x0800) {
+					checkScalarValue(codePoint);
 					return codePoint;
 				} else {
 					throw Error('Invalid continuation byte');
@@ -5490,8 +5495,22 @@
 
 	var blobSupported = (function() {
 	  try {
-	    var b = new Blob(['hi']);
-	    return b.size == 2;
+	    var a = new Blob(['hi']);
+	    return a.size === 2;
+	  } catch(e) {
+	    return false;
+	  }
+	})();
+
+	/**
+	 * Check if Blob constructor supports ArrayBufferViews
+	 * Fails in Safari 6, so we need to map to ArrayBuffers there.
+	 */
+
+	var blobSupportsArrayBufferView = blobSupported && (function() {
+	  try {
+	    var b = new Blob([new Uint8Array([1,2])]);
+	    return b.size === 2;
 	  } catch(e) {
 	    return false;
 	  }
@@ -5505,19 +5524,52 @@
 	  && BlobBuilder.prototype.append
 	  && BlobBuilder.prototype.getBlob;
 
+	/**
+	 * Helper function that maps ArrayBufferViews to ArrayBuffers
+	 * Used by BlobBuilder constructor and old browsers that didn't
+	 * support it in the Blob constructor.
+	 */
+
+	function mapArrayBufferViews(ary) {
+	  for (var i = 0; i < ary.length; i++) {
+	    var chunk = ary[i];
+	    if (chunk.buffer instanceof ArrayBuffer) {
+	      var buf = chunk.buffer;
+
+	      // if this is a subarray, make a copy so we only
+	      // include the subarray region from the underlying buffer
+	      if (chunk.byteLength !== buf.byteLength) {
+	        var copy = new Uint8Array(chunk.byteLength);
+	        copy.set(new Uint8Array(buf, chunk.byteOffset, chunk.byteLength));
+	        buf = copy.buffer;
+	      }
+
+	      ary[i] = buf;
+	    }
+	  }
+	}
+
 	function BlobBuilderConstructor(ary, options) {
 	  options = options || {};
 
 	  var bb = new BlobBuilder();
+	  mapArrayBufferViews(ary);
+
 	  for (var i = 0; i < ary.length; i++) {
 	    bb.append(ary[i]);
 	  }
+
 	  return (options.type) ? bb.getBlob(options.type) : bb.getBlob();
+	};
+
+	function BlobConstructor(ary, options) {
+	  mapArrayBufferViews(ary);
+	  return new Blob(ary, options || {});
 	};
 
 	module.exports = (function() {
 	  if (blobSupported) {
-	    return global.Blob;
+	    return blobSupportsArrayBufferView ? global.Blob : BlobConstructor;
 	  } else if (blobBuilderSupported) {
 	    return BlobBuilderConstructor;
 	  } else {
@@ -6701,7 +6753,7 @@
 	var on = __webpack_require__(47);
 	var bind = __webpack_require__(48);
 	var debug = __webpack_require__(5)('socket.io-client:socket');
-	var hasBin = __webpack_require__(49);
+	var hasBin = __webpack_require__(26);
 
 	/**
 	 * Module exports.
@@ -7157,80 +7209,6 @@
 
 /***/ },
 /* 49 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {
-	/*
-	 * Module requirements.
-	 */
-
-	var isArray = __webpack_require__(50);
-
-	/**
-	 * Module exports.
-	 */
-
-	module.exports = hasBinary;
-
-	/**
-	 * Checks for binary data.
-	 *
-	 * Right now only Buffer and ArrayBuffer are supported..
-	 *
-	 * @param {Object} anything
-	 * @api public
-	 */
-
-	function hasBinary(data) {
-
-	  function _hasBinary(obj) {
-	    if (!obj) return false;
-
-	    if ( (global.Buffer && global.Buffer.isBuffer(obj)) ||
-	         (global.ArrayBuffer && obj instanceof ArrayBuffer) ||
-	         (global.Blob && obj instanceof Blob) ||
-	         (global.File && obj instanceof File)
-	        ) {
-	      return true;
-	    }
-
-	    if (isArray(obj)) {
-	      for (var i = 0; i < obj.length; i++) {
-	          if (_hasBinary(obj[i])) {
-	              return true;
-	          }
-	      }
-	    } else if (obj && 'object' == typeof obj) {
-	      if (obj.toJSON) {
-	        obj = obj.toJSON();
-	      }
-
-	      for (var key in obj) {
-	        if (Object.prototype.hasOwnProperty.call(obj, key) && _hasBinary(obj[key])) {
-	          return true;
-	        }
-	      }
-	    }
-
-	    return false;
-	  }
-
-	  return _hasBinary(data);
-	}
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 50 */
-/***/ function(module, exports) {
-
-	module.exports = Array.isArray || function (arr) {
-	  return Object.prototype.toString.call(arr) == '[object Array]';
-	};
-
-
-/***/ },
-/* 51 */
 /***/ function(module, exports) {
 
 	
@@ -7319,7 +7297,7 @@
 	};
 
 /***/ },
-/* 52 */
+/* 50 */
 /***/ function(module, exports) {
 
 	
