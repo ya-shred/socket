@@ -4,11 +4,11 @@ window.io = require('socket.io-client');
  */
 var socketServerUrl;
 
-if (process.env.NODE_ENV === 'production') {
+//if (process.env.NODE_ENV === 'production') {
     socketServerUrl = 'https://shri-socket.herokuapp.com/';
-} else {
-    socketServerUrl = 'http://localhost:8010/';
-}
+//} else {
+//    socketServerUrl = 'http://localhost:8010/';
+//}
 
 var socket = null;
 
